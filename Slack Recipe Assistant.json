@@ -1,0 +1,137 @@
+{
+  "name": "Slack Recipe Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "trigger": [
+          "message"
+        ],
+        "watchWorkspace": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "25920bc2-2210-405b-ab0f-fc7a2bdefa8b",
+      "name": "Slack Trigger",
+      "webhookId": "5315f0db-a971-4654-9a22-b3b90a35a6b8",
+      "credentials": {
+        "slackApi": {
+          "id": "ARx6iu65qKMC9zK3",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "={{$json.text}}"
+            },
+            {
+              "role": "system",
+              "content": "You are a professional chef.\n\nThe user will send only the recipe name.\n\nReturn the answer in the following format:\n\nRecipe: <Recipe Name>\n\nIngredients:\n- ingredient 1\n- ingredient 2\n- ingredient 3\n\nShopping List:\n- item 1\n- item 2\n- item 3\n\nDo not ask questions.\nDo not ask the user for more information.\nIf the user sends only \"Pizza\", assume they want a standard Pizza recipe."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f35822d2-5592-4c4a-84ab-05394f952a53",
+      "name": "Message a model",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "credentials": {
+        "openAiApi": {
+          "id": "Hf7VOG1mSXRpOLLv",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BEM9R2R7G",
+          "mode": "list",
+          "cachedResultName": "recipe"
+        },
+        "text": "={{ $json.output[0].content[0].text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        560,
+        0
+      ],
+      "id": "23590175-1d68-4068-b821-b4787d906fa6",
+      "name": "Send a message",
+      "webhookId": "580e47ec-68e4-402d-a142-62d926720719",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "fTz0pOYqoTnvNpP6",
+          "name": "Recipe"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Slack Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b4494c12-1536-4445-9688-8f692e2462cd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5624161cc1a54e88af82bfa9306ba571f7d4288a682920925a847d6db7fa7967"
+  },
+  "nodeGroups": [],
+  "id": "Dzu92wetLM7l93w9",
+  "tags": []
+}
